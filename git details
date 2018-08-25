@@ -1,0 +1,7 @@
+do an init first
+git init
+Then setup config
+git config user.name
+git confic user.email
+then add remote after creating respository 
+git remote add origin https://github.com/udayakp/nbot.git
