@@ -1,0 +1,9 @@
+gunicorn
+Flask
+aiml
+nltk
+numpy
+pandas
+mysql
+scikit
+stanfordcorenlp
