@@ -5,3 +5,6 @@ git config user.name
 git confic user.email
 then add remote after creating respository 
 git remote add origin https://github.com/udayakp/nbot.git
+Add to staging
+git add "filename" (to track)
+git commit - m message
