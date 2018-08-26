@@ -1,24 +1,28 @@
 #grammar parsing
+import os
+from nltk.parse.stanford import StanfordDependencyParser
+import numpy as np
+import pandas as pd
+import features
+from sklearn.ensemble import RandomForestClassifier
+import mysql.connector
+
+path = dirname(__file__) + "/libs"
+
 def parse_sentence(user_input):                               #returns root word, triples of StanfordDependencyParser
-    import os
-    from nltk.parse.stanford import StanfordDependencyParser
-    path = 'C:\\Users\\Vishakha Lall\\Projects\\Python\\MapBotChatBot\\stanford-corenlp-full-2017-06-09\\'
     path_to_jar = path + 'stanford-corenlp-3.8.0.jar'
     path_to_models_jar = path + 'stanford-corenlp-3.8.0-models.jar'
     dependency_parser = StanfordDependencyParser(path_to_jar=path_to_jar, path_to_models_jar=path_to_models_jar)
     os.environ['JAVA_HOME'] = 'C:\\ProgramData\\Oracle\\Java\\javapath'
     result = dependency_parser.raw_parse(user_input)
-    dep = next(result)                                                          # get next item from the iterator result
+    dep = next(result)                                         # get next item from the iterator result
     return dep.triples(),dep.root["word"]
 
 #classification into statements questions and chat
 def classify_model():
-    import numpy as np
-    import pandas as pd
-    from sklearn.ensemble import RandomForestClassifier
-    FNAME = 'C:\\Users\\Vishakha Lall\\Projects\\Python\\MapBotChatBot\\analysis\\featuresDump.csv'
+    FNAME = path + 'featuresDump.csv'
     df = pd.read_csv(filepath_or_buffer = FNAME, )
-    df.columns = df.columns[:].str.strip()                                      # Strip any leading spaces from col names
+    df.columns = df.columns[:].str.strip()                      # Strip any leading spaces from col names
     df['class'] = df['class'].map(lambda x: x.strip())
     width = df.shape[1]
     #split into test and training (is_train: True / False col)
@@ -35,8 +39,6 @@ def classify_model():
     return clf
 
 def classify_sentence(clf,user_input):
-    import features
-    import pandas as pd
     keys = ["id",
     "wordCount",
     "stemmedCount",
@@ -71,8 +73,7 @@ def classify_sentence(clf,user_input):
 
 #setup database
 def setup_database():
-    import mysql.connector
-    db = mysql.connector.connect(user='root',password='viks1995',host='127.0.0.1',database='mapbot')
+    db = mysql.connector.connect(user='root',password='viks1995',host='127.0.0.1',database='nbot')
     cur = db.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS chat_table(id INTEGER PRIMARY KEY AUTO_INCREMENT, root_word VARCHAR(40), subject VARCHAR(40), verb VARCHAR(40), sentence VARCHAR(200))")
     cur.execute("CREATE TABLE IF NOT EXISTS statement_table(id INTEGER PRIMARY KEY AUTO_INCREMENT, root_word VARCHAR(40), subject VARCHAR(40), verb VARCHAR(40), sentence VARCHAR(200))")
@@ -80,8 +81,7 @@ def setup_database():
 
 #add classified sentences to database
 def add_to_database(classification,subject,root,verb,H):
-    import mysql.connector
-    db = mysql.connector.connect(user='root',password='viks1995',host='127.0.0.1',database='mapbot')
+    db = mysql.connector.connect(user='root',password='viks1995',host='127.0.0.1',database='nbot')
     cur = db.cursor()
     if classification == 'C':
         cur.execute("INSERT INTO chat_table(subject,root_word,verb,sentence) VALUES (%s,%s,%s,%s)",(str(subject),str(root),str(verb),H))
@@ -95,8 +95,7 @@ def add_to_database(classification,subject,root,verb,H):
 
 #get a random chat response
 def get_chat_response():
-    import mysql.connector
-    db = mysql.connector.connect(user='root',password='viks1995',host='127.0.0.1',database='mapbot')
+    db = mysql.connector.connect(user='root',password='viks1995',host='127.0.0.1',database='nbot')
     cur = db.cursor()
     cur.execute("SELECT COUNT(*) FROM chat_table")
     res = cur.fetchone()
@@ -110,8 +109,7 @@ def get_chat_response():
 
 #get a random chat response
 def get_question_response(subject,root,verb):
-    import mysql.connector
-    db = mysql.connector.connect(user='root',password='viks1995',host='127.0.0.1',database='mapbot')
+    db = mysql.connector.connect(user='root',password='viks1995',host='127.0.0.1',database='nbot')
     cur = db.cursor()
     cur.execute("SELECT COUNT(*) FROM statement_table")
     res = cur.fetchone()

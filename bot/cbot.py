@@ -6,18 +6,14 @@ from utilities import add_to_database
 from utilities import get_chat_response
 from utilities import get_question_response
 
+clf = classify_model()
 def train():
-    clf = classify_model()
     setup_database()
-    return clf
+
 
 B = "Hi! I'm Bot!"
-def respond(msg,clf):
-    H = msg
-    if H == "":                                                                 #empty input
-        B = "Bye! I'll miss you!"
-        return('Bot: '+B)
-        break                                                                   #exit loop
+def respond(msg):
+    H = msg                                                              
     #grammar parsing
     subj = set()
     obj = set()

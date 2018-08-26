@@ -2,13 +2,10 @@ import aiml
 from os import listdir
 from os.path import dirname, isfile
 import cbot
-from utilities import classify_sentence
-from utilities import classify_model
-from utilities import setup_database
 
 #kernel = aiml.Kernel()
 
-aiml_path = dirname(__file__) + "/aiml"
+path = dirname(__file__) + "/libs"
 brain_path = dirname(__file__) +"/bot_brain.brn"
 
 def train():

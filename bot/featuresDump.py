@@ -21,7 +21,7 @@ print("reading input from ", FNAME)
 if len(sys.argv) > 2:
     FOUT = sys.argv[2]
 else:
-    FOUT = './analysis/featuresDump.csv'
+    FOUT = './libs/featuresDump.csv'
 print("Writing output to ", FOUT)
 
 fin = open(FNAME, 'rt')
